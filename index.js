@@ -3,6 +3,8 @@ const authorize = require("./authorize");
 const { fetchThreads } = require("./threads");
 const { sendMessage } = require("./message");
 
+const me = "siddharth201820@gmail.com";
+
 function calculateDelay() {
   let max = 10,
     min = 5;
@@ -31,13 +33,8 @@ async function checkAndReply(gmail) {
 
       // fetching the last message
       const lastMessage = currThread.data.messages.at(-1);
-      // console.log(lastMessage.payload.headers);
-      // console.log(lastMessage.map((a) => a.payload.headers));
       const byMe = lastMessage.payload.headers.find(
-        (obj) =>
-          obj.name.toLowerCase() == "from" &&
-          (obj.value == "Siddharth Sahu <siddharth201820@gmail.com>" ||
-            obj.value == "siddharth201820@gmail.com")
+        (obj) => obj.name.toLowerCase() == "from" && obj.value == me
       );
       // checking if the thread contains a message that is sent by me or not
       if (!byMe) {
@@ -46,7 +43,6 @@ async function checkAndReply(gmail) {
           .value.split(" ")
           .at(-1)
           .slice(1, -1);
-        // console.log(toAddress);
         await sendMessage(gmail, toAddress, thread.id);
         console.log("Message Sent\n");
       } else {
@@ -91,3 +87,5 @@ async function main() {
 }
 
 main();
+
+module.exports = { me };

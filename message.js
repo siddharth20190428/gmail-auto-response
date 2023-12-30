@@ -1,5 +1,6 @@
 const { addLabelToEmail } = require("./labels");
 const { Base64 } = require("js-base64");
+const { me } = require("./index");
 
 /**
  * Generates base64 encodedURI for sending email
@@ -23,7 +24,7 @@ function makeBody(to, from, subject, message) {
 async function sendMessage(gmail, to, threadId) {
   let raw = makeBody(
     to,
-    "siddharth201820@gmail.com",
+    me,
     "Thanks for Emailing",
     "<p>Since, I am on vacation. My bot is replying to you. I will be back soon.</p>"
   );
