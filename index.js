@@ -1,33 +1,56 @@
 const { google } = require("googleapis");
 const authorize = require("./authorize");
 const { fetchThreads } = require("./threads");
+const { sendMessage } = require("./message");
+
+function calculateDelay() {
+  let max = 10,
+    min = 5;
+  let delay = Math.floor(Math.random() * (max - min + 1)) + min;
+  return delay;
+}
+
+function logTime(delay) {
+  console.log("\nStarted at", new Date().toLocaleString());
+  console.log("Refresh in", delay, "seconds\n");
+}
 
 async function checkAndReply(gmail) {
   try {
-    console.log("Getting threads");
+    // fetching threads
+    console.log("Fetching threads");
     const threads = await fetchThreads(gmail);
     console.log("Threads fetched");
 
+    // iterating threads
     threads.forEach(async (thread) => {
       const currThread = await gmail.users.threads.get({
         userId: "me",
         id: thread.id,
       });
 
-      const messages = currThread.data.messages;
-      messages.forEach((message) => {
-        const byMe = message.payload.headers.find(
-          (obj) =>
-            obj.name.toLowerCase() == "from" &&
-            (obj.value == "Siddharth Sahu <siddharth201820@gmail.com>" ||
-              obj.value == "siddharth201820@gmail.com")
-        );
-        if (!byMe) {
-          console.log("Message Sent\n");
-        } else {
-          console.log("Message not Sent By Me\n");
-        }
-      });
+      // fetching the last message
+      const lastMessage = currThread.data.messages.at(-1);
+      // console.log(lastMessage);
+      const byMe = lastMessage.payload.headers.find(
+        (obj) =>
+          obj.name.toLowerCase() == "from" &&
+          (obj.value == "Siddharth Sahu <siddharth201820@gmail.com>" ||
+            obj.value == "siddharth201820@gmail.com")
+      );
+      // checking if the thread contains a message that is sent by me or not
+      if (!byMe) {
+        const toAddress = lastMessage.payload.headers
+          .find((obj) => obj.name.toLowerCase() == "from")
+          .value.split(" ")
+          .at(-1)
+          .slice(1, -1);
+        // console.log(toAddress);
+        await sendMessage(gmail, toAddress, thread.id);
+        console.log("Message Sent\n");
+      } else {
+        console.log("Already Replied\n");
+      }
     });
   } catch (error) {
     console.log(error);
@@ -42,17 +65,24 @@ async function main() {
     const gmail = google.gmail({ version: "v1", auth });
     console.log("Authorized");
 
-    let max = 10,
-      min = 5;
-
+    logTime(calculateDelay());
+    await checkAndReply(gmail);
     const repeat = async () => {
-      let delay = Math.floor(Math.random() * (max - min + 1)) + min;
-      console.log("\nStarted at", new Date().toLocaleString());
-      console.log("Refresh in", delay, "seconds\n");
-      setTimeout(repeat, delay * 1000);
+      try {
+        // repeating the checkAndReply in random seconds
+        const delay = calculateDelay();
 
-      await checkAndReply(gmail);
+        // Use setTimeout instead of setInterval
+        setTimeout(async () => {
+          logTime(delay);
+          await checkAndReply(gmail);
+          repeat(); // Call repeat again after the specified delay
+        }, delay * 1000);
+      } catch (error) {
+        console.error("Error in repeat:", error);
+      }
     };
+
     repeat();
   } catch (error) {
     console.log(error);

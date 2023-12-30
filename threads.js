@@ -6,13 +6,17 @@
  */
 
 async function fetchThreads(gmail, count = 1) {
-  const res = await gmail.users.threads.list({
-    userId: "me",
-    maxResults: count,
-  });
+  try {
+    const res = await gmail.users.threads.list({
+      userId: "me",
+      maxResults: count,
+    });
 
-  const threads = res.data.threads;
+    const threads = res.data.threads;
 
-  return threads;
+    return threads;
+  } catch (error) {
+    console.log(error);
+  }
 }
 module.exports = { fetchThreads };
