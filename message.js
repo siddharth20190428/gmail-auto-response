@@ -1,4 +1,4 @@
-// const { addLabelToEmail } = require("./labels");
+const { addLabelToEmail } = require("./labels");
 const { Base64 } = require("js-base64");
 
 /**
@@ -27,16 +27,17 @@ async function sendMessage(gmail, to, threadId) {
     "Thanks for Emailing",
     "<p>Since, I am on vacation. My bot is replying to you. I will be back soon.</p>"
   );
-  gmail.users.messages.send({
-    userId: "me",
-    resource: {
-      raw,
-      threadId,
-    },
-  });
-  // .then((res) => {
-  //   addLabelToEmail(gmail, res.data.id);
-  // });
+  gmail.users.messages
+    .send({
+      userId: "me",
+      resource: {
+        raw,
+        threadId,
+      },
+    })
+    .then((res) => {
+      addLabelToEmail(gmail, res.data.id);
+    });
 }
 
 module.exports = { sendMessage };

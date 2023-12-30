@@ -31,7 +31,8 @@ async function checkAndReply(gmail) {
 
       // fetching the last message
       const lastMessage = currThread.data.messages.at(-1);
-      // console.log(lastMessage);
+      // console.log(lastMessage.payload.headers);
+      // console.log(lastMessage.map((a) => a.payload.headers));
       const byMe = lastMessage.payload.headers.find(
         (obj) =>
           obj.name.toLowerCase() == "from" &&
