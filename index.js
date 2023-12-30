@@ -6,8 +6,8 @@ const { sendMessage } = require("./message");
 const me = "siddharth201820@gmail.com";
 
 function calculateDelay() {
-  let max = 10,
-    min = 5;
+  let max = 120,
+    min = 45;
   let delay = Math.floor(Math.random() * (max - min + 1)) + min;
   return delay;
 }

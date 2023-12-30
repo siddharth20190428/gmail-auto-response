@@ -1,6 +1,6 @@
 # Gmail Auto Response Application
 
-This application automates various tasks related to Gmail using the Gmail API.
+Node.js based app that is able to respond to emails sent to your Gmail mailbox while you’re out on a vacation.
 
 ## Features Completed
 
@@ -12,7 +12,7 @@ This application automates various tasks related to Gmail using the Gmail API.
 2. **Check for New Emails:**
 
    - The application regularly checks for new emails in a specified Gmail ID.
-   - Utilized Gmail API's `users.threads.get` endpoint to retrieve a list of messages.
+   - Utilized Gmail API's `users.threads.get` endpoint to retrieve a list of threads.
 
 3. **Send Replies to Emails with No Prior Replies:**
 
